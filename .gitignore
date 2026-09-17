@@ -1,0 +1,20 @@
+# Java compilation
+*.class
+*.jar
+
+# Generated C code and executables
+test.c
+test
+test.exe
+
+# Output files
+actual_output.txt
+*.out
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store

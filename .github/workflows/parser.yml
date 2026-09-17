@@ -1,0 +1,43 @@
+name: Compile Parser and Test Generated C Code
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Compile Lexer.java and Parser.java
+        run: javac Lexer.java Parser.java
+
+      - name: Run Parser to generate C code
+        run: java Parser < test.see > test.c
+
+      - name: Compile generated C code
+        run: gcc test.c -o test -Wall
+
+      - name: Run generated C program
+        run: ./test > actual_output.txt
+
+      - name: Compare output with expected
+        run: |
+          if diff -u EXPECTED actual_output.txt; then
+            echo "✓ Output matches EXPECTED file"
+          else
+            echo "✗ Output does not match EXPECTED file"
+            exit 1
+          fi
+
+      - name: Display generated C code
+        if: failure()
+        run: |
+          echo "=== Generated C Code (test.c) ==="
+          cat test.c
